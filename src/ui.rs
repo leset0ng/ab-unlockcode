@@ -4,11 +4,13 @@ use std::sync::{Mutex, OnceLock};
 pub const EVENT_MAC_INPUT: &str = "mac_input";
 pub const EVENT_SN_INPUT: &str = "sn_input";
 pub const EVENT_CALC_CLICK: &str = "calc_click";
+pub const EVENT_ALGO_SWITCH: &str = "algo_switch";
 
 #[derive(Default)]
 pub struct UiState {
     pub mac: String,
     pub sn: String,
+    pub use_new_algorithm: bool,
     pub code: Option<String>,
     pub error: Option<String>,
     pub root_element_id: Option<String>,
@@ -30,6 +32,13 @@ pub fn update_mac(value: String) {
 pub fn update_sn(value: String) {
     let mut state = ui_state().lock().unwrap_or_else(|p| p.into_inner());
     state.sn = value;
+    state.code = None;
+    state.error = None;
+}
+
+pub fn set_use_new_algorithm(value: bool) {
+    let mut state = ui_state().lock().unwrap_or_else(|p| p.into_inner());
+    state.use_new_algorithm = value;
     state.code = None;
     state.error = None;
 }
@@ -85,6 +94,39 @@ fn input_row(
         .child(input)
 }
 
+fn algorithm_switch(checked: bool) -> Element {
+    let switch = Element::new(ui_v3::ElementType::Switch, None)
+        .prop("default-checked", if checked { "true" } else { "false" })
+        .on(ui_v3::Event::Change, EVENT_ALGO_SWITCH);
+
+    let label = Element::new(ui_v3::ElementType::P, Some("新版算法"))
+        .size(14)
+        .text_color("#ffffff");
+
+    let hint = Element::new(
+        ui_v3::ElementType::P,
+        Some("适用于 S5 / 10P 及以后设备"),
+    )
+    .size(11)
+    .text_color("#888888");
+
+    let text_col = Element::new(ui_v3::ElementType::Div, None)
+        .flex()
+        .flex_direction(ui_v3::FlexDirection::Column)
+        .margin_left(10)
+        .child(label)
+        .child(hint);
+
+    Element::new(ui_v3::ElementType::Div, None)
+        .flex()
+        .flex_direction(ui_v3::FlexDirection::Row)
+        .align_center()
+        .width_full()
+        .margin_bottom(12)
+        .child(switch)
+        .child(text_col)
+}
+
 pub fn build_ui(state: &UiState) -> Element {
     let title = Element::new(ui_v3::ElementType::P, Some("AB Unlock Code"))
         .size(20)
@@ -108,6 +150,8 @@ pub fn build_ui(state: &UiState) -> Element {
 
     let sn_row = input_row("序列号 (SN)", "例如 SN123456789", &state.sn, EVENT_SN_INPUT);
 
+    let algo_row = algorithm_switch(state.use_new_algorithm);
+
     let calc_button = Element::new(ui_v3::ElementType::Button, Some("计算解锁码"))
         .width_full()
         .padding(10)
@@ -122,6 +166,7 @@ pub fn build_ui(state: &UiState) -> Element {
         subtitle,
         mac_row,
         sn_row,
+        algo_row,
         calc_button,
     ];
 

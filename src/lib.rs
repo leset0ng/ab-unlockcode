@@ -38,7 +38,7 @@ impl event_v3::Guest for MyPlugin {
 
         match event {
             event_v3::Event::Input => handle_input(&event_id, &event_payload),
-            event_v3::Event::Change => handle_input(&event_id, &event_payload),
+            event_v3::Event::Change => handle_change(&event_id, &event_payload),
             event_v3::Event::Click => handle_click(&event_id),
             _ => {}
         }
@@ -94,6 +94,16 @@ fn handle_input(event_id: &str, payload: &str) {
     }
 }
 
+fn handle_change(event_id: &str, payload: &str) {
+    match event_id {
+        ui::EVENT_ALGO_SWITCH => {
+            let checked = parse_checked_value(payload);
+            ui::set_use_new_algorithm(checked);
+        }
+        _ => handle_input(event_id, payload),
+    }
+}
+
 fn handle_click(event_id: &str) {
     match event_id {
         ui::EVENT_CALC_CLICK => {
@@ -108,7 +118,11 @@ fn handle_click(event_id: &str) {
             if mac_clean.is_empty() || sn_clean.is_empty() {
                 ui::set_error("MAC 和 SN 都不能为空".to_string());
             } else {
-                let code = calc::calc_unlock_code(mac_clean, sn_clean);
+                let use_new = {
+                    let state = ui::ui_state().lock().unwrap_or_else(|p| p.into_inner());
+                    state.use_new_algorithm
+                };
+                let code = calc::calc_unlock_code(mac_clean, sn_clean, use_new);
                 ui::set_code(code);
             }
 
@@ -125,4 +139,11 @@ fn parse_input_value(payload: &str) -> String {
         .ok()
         .and_then(|v| v.get("value").and_then(|v| v.as_str()).map(String::from))
         .unwrap_or_default()
+}
+
+fn parse_checked_value(payload: &str) -> bool {
+    serde_json::from_str::<serde_json::Value>(payload)
+        .ok()
+        .and_then(|v| v.get("checked").and_then(|v| v.as_bool()))
+        .unwrap_or(false)
 }
