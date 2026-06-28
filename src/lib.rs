@@ -116,19 +116,6 @@ fn handle_click(event_id: &str) {
                 ui::render_main_ui(&root_id);
             }
         }
-        ui::EVENT_COPY_CLICK => {
-            let code = {
-                let state = ui::ui_state().lock().unwrap_or_else(|p| p.into_inner());
-                state.code.clone()
-            };
-
-            if let Some(code) = code {
-                astrobox_ng_wit::spawn(async move {
-                    let _ = astrobox_ng_wit::astrobox::psys_host::clipboard::write_text(&code)
-                        .await;
-                });
-            }
-        }
         _ => {}
     }
 }

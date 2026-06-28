@@ -4,7 +4,6 @@ use std::sync::{Mutex, OnceLock};
 pub const EVENT_MAC_INPUT: &str = "mac_input";
 pub const EVENT_SN_INPUT: &str = "sn_input";
 pub const EVENT_CALC_CLICK: &str = "calc_click";
-pub const EVENT_COPY_CLICK: &str = "copy_click";
 
 #[derive(Default)]
 pub struct UiState {
@@ -137,29 +136,8 @@ pub fn build_ui(state: &UiState) -> Element {
             .size(30)
             .text_color("#ff6b00");
 
-        let copy_button = Element::new(ui_v3::ElementType::Button, Some("复制"))
-            .padding_top(6)
-            .padding_bottom(6)
-            .padding_left(14)
-            .padding_right(14)
-            .bg("#2a2a2a")
-            .text_color("#ffffff")
-            .radius(6)
-            .size(13)
-            .on(ui_v3::Event::Click, EVENT_COPY_CLICK);
-
-        let result_row = Element::new(ui_v3::ElementType::Div, None)
-            .flex()
-            .flex_direction(ui_v3::FlexDirection::Row)
-            .align_center()
-            .justify_start()
-            .gap(12)
-            .margin_bottom(8)
-            .child(code_text)
-            .child(copy_button);
-
         children.push(result_label);
-        children.push(result_row);
+        children.push(code_text);
     }
 
     if let Some(error) = &state.error {

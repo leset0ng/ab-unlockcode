@@ -8,6 +8,6 @@
   "entry": "ab_unlockcode.wasm",
   "wasi_version": 2,
   "api_level": 3,
-  "permissions": ["clipboard.write"],
+  "permissions": [],
   "additional_files": []
 }
