@@ -1,0 +1,13 @@
+{
+    "name": "Blank Template",
+    "icon": "icon.png",
+    "version": "1.0.0",
+    "description": "一个示例 AstroBox 插件",
+    "author": "AstroBox Team",
+    "website": "https://example.com",
+    "entry": "astrobox_ng_plugin_template_rust.wasm",
+    "wasi_version": 2,
+    "api_level": 2,
+    "permissions": ["network"],
+    "additional_files": []
+}
