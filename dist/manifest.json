@@ -1,10 +1,10 @@
 {
   "name": "解锁码计算",
   "icon": "icon.png",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "根据 MAC 与 SN 计算小米设备解锁码",
   "author": "lesetong",
-  "website": "https://github.com/AstralSightStudios/AstroBox-NG",
+  "website": "https://github.com/leset0ng/ab-unlockcode",
   "entry": "ab_unlockcode.wasm",
   "wasi_version": 2,
   "api_level": 3,
