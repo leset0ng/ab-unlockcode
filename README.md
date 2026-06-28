@@ -1,20 +1,17 @@
-# AstroBox NG Plugin Template (Rust)
+# 解锁码计算
 
-一个用于 [AstroBox NG](https://github.com/AstralSightStudios/AstroBox-NG) 的 Rust 插件模板项目。
+一个用于 [AstroBox NG](https://github.com/AstralSightStudios/AstroBox-NG) 的插件，根据设备的 MAC 地址和序列号（SN）计算小米设备解锁码。
+
+## 算法
+
+```text
+unlock_code = SHA256(upper(MAC without separators) + upper(SN) + "XIAOMI")
+code = 前 10 个字节分别对 0xA 取模后拼接成的 10 位数字
+```
+
+MAC 输入会自动去除 `:`、`：`（中文冒号）、`-`、空格、`.` 等分隔符，并转换为大写。
 
 ## 环境准备
-
-### 1. 安装 Rust
-
-👉 https://www.rust-lang.org/learn/get-started
-
-### 2. 安装 Python 3
-
-构建脚本使用 Python 编写，需要安装 Python 3。
-
-👉 https://www.python.org/downloads/
-
-### 3. 安装 wasm32-wasip2 编译目标
 
 ```bash
 rustup target add wasm32-wasip2
@@ -24,15 +21,17 @@ rustup target add wasm32-wasip2
 
 ```bash
 # Debug 构建到 dist 文件夹
-python scripts/build_dist.py
+python3 scripts/build_dist.py
 
 # Release 构建到 dist 文件夹
-python scripts/build_dist.py --release
+python3 scripts/build_dist.py --release
 
 # Release 构建并打包为 .abp 插件包
-python scripts/build_dist.py --release --package
+python3 scripts/build_dist.py --release --package
 ```
 
-构建产物会输出到 `dist/` 目录，包含编译后的 wasm 文件、`manifest.json` 和图标。
+构建产物位于 `dist/`，其中 `AB Unlock Code.abp` 可直接通过 AstroBox 安装。
 
-使用 `--package` 时会额外生成一个 `.abp` 文件，可直接通过 AstroBox 安装。
+## 依赖
+
+- `astrobox-ng-wit` 依赖已升级为 `0.3.1`，对应 `psys-world-v3` / `api_level: 3`。
